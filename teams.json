@@ -1,1 +1,17 @@
-{"instructor": {"lab1": "https://github.com/GitHubClassroomTestCMPUT229/testStarter"}, "team1": {"lab1": "https://github.com/GitHubClassroomTestCMPUT229/teststarter-stuarthoye"}, "team2": {"lab1": "https://github.com/GitHubClassroomTestCMPUT229/testStarter"}}
+{
+    "instructor": 
+        {
+        "lab1": "https://github.com/GitHubClassroomTestCMPUT229/testStarter",
+        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/testStarter"
+        }, 
+    "team1": 
+        {
+        "lab1": "https://github.com/GitHubClassroomTestCMPUT229/teststarter-stuarthoye",
+        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/teststarter-stuarthoye"
+        }, 
+    "team2": 
+        {
+        "lab1": "https://github.com/GitHubClassroomTestCMPUT229/testStarter",
+        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/testStarter"
+        }
+}

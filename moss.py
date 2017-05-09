@@ -32,7 +32,6 @@ def parse_teams():
     filename = "./teams.json"
     f = open(filename, "r")
     teams = json.load(f)
-    
     return teams
     
 
@@ -45,6 +44,7 @@ def parse_teams():
 # Effect:
 #   Repos are cloned into ./<labID>/<teamID>/
 def get_repos(lab):
+    teams = parse_teams()
     for team in teams.keys():
         Repo.clone_from(teams[team][lab], "./{}/{}/".format(lab, team))
 
@@ -68,3 +68,4 @@ def main(args):
 if __name__ == "__main__":
     # main(sys.argv)
     print parse_teams()
+
