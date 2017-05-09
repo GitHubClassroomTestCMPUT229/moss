@@ -1,14 +1,31 @@
-from git import Repo
-from mossPython import callScript as submit_repos
 import sys
 import os.path
 import shutil
 import smtplib
 import json
-# Import the email modules we'll need
+
 from email.mime.text import MIMEText
+from git import Repo
+from mossPython import callScript as submit_repos
+
 
 #------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+def get_contacts():
+    f = open("teachingTeam.json", "r")
+    contacts = json.load(f)
+    print contacts
+    return contacts["contacts"]
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+def parse_teams(path):
+    f = open(path, "r")
+    teams = json.load(f)
+    return teams
+
+#------------------------------------------------------------------------------
+# Sends an email notifying about similarities to all members of the teaching team.
 # https://docs.python.org/2/library/email-examples.html
 #------------------------------------------------------------------------------
 def notify(lab):
@@ -19,26 +36,27 @@ def notify(lab):
     fp.close()
 
     # me == the sender's email address
-    me = "hoye@ualberta.ca"
-    you = "hoye@ualberta.ca"
-    # you == the recipient's email address
-    msg['Subject'] = "CMPUT 229 {} Results".format(lab)
-    msg['From'] = me
-    msg['To'] = you
+    me = "hoye@cs.ualberta.ca"
+    # you == the list of recipients' email addresses
+    contacts = get_contacts()
+    for contact in contacts:
+        msg['Subject'] = "CMPUT 229 {} Results".format(lab)
+        msg['From'] = me
+        msg['To'] = contact
 
-    # Send the message via our own SMTP server, but don't include the
-    # envelope header.
-    # TODO: Permit sending from server on eg: Heroku
-    s = smtplib.SMTP('localhost')
-    s.sendmail(me, [you], msg.as_string())
-    s.quit()
+        # Send the message via our own SMTP server, but don't include the
+        # envelope header.
+        # TODO: Permit sending from server on eg: Heroku
+        # https://medium.freecodecamp.com/send-emails-using-code-4fcea9df63f
+        # https://www.ualberta.ca/computing-science/links-and-resources/technical-support/email/authenticated-smtp
+        s = smtplib.SMTP('localhost')
+        # s = smtplib.SMTP('smtp-auth.cs.ualberta.ca', 587)
+        # s.starttls()
+        # s.login(USERNAME, PASSWORD)
+        s.sendmail(me, contact, msg.as_string())
+        s.quit()
 
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
-def parse_teams(path):
-    f = open(path, "r")
-    teams = json.load(f)
-    return teams
+
 
 #------------------------------------------------------------------------------
 # Requirements:
@@ -52,11 +70,11 @@ def parse_teams(path):
 #------------------------------------------------------------------------------
 def get_repos(lab, teams):
     for team in teams.keys():
-        if teams[team][lab] != None:
+        if teams[team][lab]:
             clone_path = "./{}/{}/".format(lab, team)
             if os.path.exists(clone_path):
                 shutil.rmtree(clone_path)
-            # Repo.clone_from(teams[team][lab], "./{}/{}/".format(lab, team))
+            Repo.clone_from(teams[team][lab], clone_path)
 
 #------------------------------------------------------------------------------
 # lab1 tests when instructor provides no base code
@@ -71,6 +89,7 @@ def test():
         get_repos(lab, teams)
         submit_repos(lab, teams["instructor"][lab])
         notify(lab)
+        shutil.rmtree("./{}/".format(lab))
     
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -81,6 +100,8 @@ def mossService(lab):
     notify(lab)
 
 def main(argv):
+    if len(argv) == 1:
+        print("Usage: python moss.py <lab> OR python moss.py test")
     if len(argv) > 1:
         if argv[1] == "test":
             test()
