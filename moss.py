@@ -1,15 +1,15 @@
 from git import Repo
-from teams import teams
-from teams import teaching_team
 from mossPython import callScript as mossPy
 import sys
 import smtplib
+import json
 # Import the email modules we'll need
 from email.mime.text import MIMEText
 
 def notify(lab):
     fp = open("./{}/results.html".format(lab), 'rb')
     # Create a text/plain message
+    # TODO: Serve the html as html within the email?
     msg = MIMEText(fp.read())
     fp.close()
 
@@ -17,15 +17,24 @@ def notify(lab):
     me = "hoye@ualberta.ca"
     you = "hoye@ualberta.ca"
     # you == the recipient's email address
-    msg['Subject'] = "The results of {}".format(lab)
+    msg['Subject'] = "CMPUT 229 {} Results".format(lab)
     msg['From'] = me
     msg['To'] = you
 
     # Send the message via our own SMTP server, but don't include the
     # envelope header.
+    # TODO: Permit sending from server on eg: Heroku
     s = smtplib.SMTP('localhost')
     s.sendmail(me, [you], msg.as_string())
     s.quit()
+
+def parse_teams():
+    filename = "./teams.json"
+    f = open(filename, "r")
+    teams = json.load(f)
+    
+    return teams
+    
 
 # Requirements:
 #   Team ids are stored in teams dict
@@ -57,4 +66,5 @@ def main(args):
     notify(lab)
 
 if __name__ == "__main__":
-    main(sys.argv)
+    # main(sys.argv)
+    print parse_teams()
