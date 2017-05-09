@@ -1,12 +1,15 @@
 from git import Repo
 from mossPython import callScript as submit_repos
 import sys
+import os.path
+import shutil
 import smtplib
 import json
 # Import the email modules we'll need
 from email.mime.text import MIMEText
 
 #------------------------------------------------------------------------------
+# https://docs.python.org/2/library/email-examples.html
 #------------------------------------------------------------------------------
 def notify(lab):
     fp = open("./{}/results.html".format(lab), 'rb')
@@ -50,6 +53,9 @@ def parse_teams(path):
 def get_repos(lab, teams):
     for team in teams.keys():
         if teams[team][lab] != None:
+            clone_path = "./{}/{}/".format(lab, team)
+            if os.path.exists(clone_path):
+                shutil.rmtree(clone_path)
             Repo.clone_from(teams[team][lab], "./{}/{}/".format(lab, team))
 
 #------------------------------------------------------------------------------
@@ -68,15 +74,20 @@ def test():
     
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
-def main(args):
+def mossService(lab):
     teams = parse_teams("./teams.json")
-    lab = args[1]
     get_repos(lab, teams)
     submit_repos(lab, teams["instructor"][lab])
     notify(lab)
 
+def main(argv):
+    if len(argv) > 1:
+        if argv[1] == "test":
+            test()
+        else:
+            lab = argv[1]
+            mossService(lab)
+
 if __name__ == "__main__":
-    # main(sys.argv)
-    # teams = parse_teams()
-    test()
+    main(sys.argv)
 
