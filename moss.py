@@ -67,5 +67,6 @@ def main(args):
 
 if __name__ == "__main__":
     # main(sys.argv)
-    print parse_teams()
+    teams = parse_teams()
+    print teams["instructor"]["lab1"]
 
