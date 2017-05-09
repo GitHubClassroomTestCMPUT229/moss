@@ -12,20 +12,13 @@ import os
 #
 # Usage: ./mossPython.py <dir> <base_flag>
 
-def main(argv):
+def callScript(project_dir, base):
     #-------------------------------------------------------------------
     # Setup
     #-------------------------------------------------------------------
-    assert len(argv) >= 2
-    assert len(argv) < 4
-    project_dir = argv[1]
-    base = False
-    if len(argv) == 3:
-        if argv[2] == "-b":
-            base = True
     base_dir = "instructor"
 
-    # Clear old case file if it exists
+    # Clear old base file if it exists; mossScript will build a new one
     if os.path.isfile("./{}/{}/base.s".format(project_dir, base_dir)):
         os.remove("./{}/{}/base.s".format(project_dir, base_dir))
 
@@ -35,9 +28,15 @@ def main(argv):
     else:
         subprocess.call(["mossScript", "-d", "{}".format(project_dir)])
 
-    # forward the results or whatever we need to do
-    if os.path.isfile("./{}/results.html".format(project_dir)):
-        print("!!!")
+def main(project_dir, base):
+    call_script(project_dir, base)
 
 if __name__ == "__main__":
-    main(sys.argv)
+    assert len(argv) >= 2
+    assert len(argv) < 4
+    project_dir = argv[1]
+    base = False
+    if len(argv) == 3:
+        if argv[2] == "-b":
+            base = True
+    main(project_dir, base)

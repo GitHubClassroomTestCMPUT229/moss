@@ -1,17 +1,17 @@
 {
-    "instructor": 
-        {
-        "lab1": null,
-        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/testStarter"
-        }, 
-    "team1": 
-        {
+    "instructor": {
+        "lab1": false,
+        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/testStarter",
+        "lab3": "https://github.com/GitHubClassroomTestCMPUT229/testStarter"
+    }, 
+    "team1": {
         "lab1": "https://github.com/GitHubClassroomTestCMPUT229/teststarter-stuarthoye",
-        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/teststarter-stuarthoye"
-        }, 
-    "team2": 
-        {
+        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/teststarter-stuarthoye",
+        "lab3": "https://github.com/GitHubClassroomTestCMPUT229/testEmpty.git"
+    }, 
+    "team2": {
         "lab1": "https://github.com/GitHubClassroomTestCMPUT229/testStarter",
-        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/testStarter"
-        }
+        "lab2": "https://github.com/GitHubClassroomTestCMPUT229/testStarter",
+        "lab3": "https://github.com/GitHubClassroomTestCMPUT229/teststarter-stuarthoye"
+    }
 }

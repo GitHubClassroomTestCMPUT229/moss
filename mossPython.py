@@ -17,8 +17,7 @@ def callScript(project_dir, base):
     # Setup
     #-------------------------------------------------------------------
     base_dir = "instructor"
-
-    # Clear old case file if it exists
+    # Clear old base file if it exists; mossScript will build a new one
     if os.path.isfile("./{}/{}/base.s".format(project_dir, base_dir)):
         os.remove("./{}/{}/base.s".format(project_dir, base_dir))
 
@@ -27,10 +26,6 @@ def callScript(project_dir, base):
         subprocess.call(["mossScript", "-d", "{}".format(project_dir), "-b"])
     else:
         subprocess.call(["mossScript", "-d", "{}".format(project_dir)])
-
-    # forward the results or whatever we need to do
-    if os.path.isfile("./{}/results.html".format(project_dir)):
-        print("!!!")
 
 def main(project_dir, base):
     call_script(project_dir, base)

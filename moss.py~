@@ -1,11 +1,13 @@
 from git import Repo
-from mossPython import callScript as mossPy
+from mossPython import callScript as submit_repos
 import sys
 import smtplib
 import json
 # Import the email modules we'll need
 from email.mime.text import MIMEText
 
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def notify(lab):
     fp = open("./{}/results.html".format(lab), 'rb')
     # Create a text/plain message
@@ -28,13 +30,14 @@ def notify(lab):
     s.sendmail(me, [you], msg.as_string())
     s.quit()
 
-def parse_teams():
-    filename = "./teams.json"
-    f = open(filename, "r")
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+def parse_teams(path):
+    f = open(path, "r")
     teams = json.load(f)
     return teams
-    
 
+#------------------------------------------------------------------------------
 # Requirements:
 #   Team ids are stored in teams dict
 #   Labs are at the next level of the dict
@@ -42,30 +45,51 @@ def parse_teams():
 # Parameter:
 #   lab is used to identify which lab is being pulled
 # Effect:
-#   Repos are cloned into ./<labID>/<teamID>/
-def get_repos(lab):
-    teams = parse_teams()
+#   Repos are cloned into <path><labID>/<teamID>/
+#------------------------------------------------------------------------------
+def get_repos(lab, teams):
     for team in teams.keys():
-        Repo.clone_from(teams[team][lab], "./{}/{}/".format(lab, team))
+        if teams[team][lab] != None:
+            Repo.clone_from(teams[team][lab], "./{}/{}/".format(lab, team))
 
+#------------------------------------------------------------------------------
 # Requirements:
 #   Must be able to access source code for assignments following structure
-#   ./<labID>/<teamID>/
+#   <path><labID>/<teamID>/
 # Parameter:
 #   lab is used to identify which lab is being submitted to moss
 # Effect:
 #   Results of moss comparison are stored in ./<labID>/results.html
 #   TODO: GATHER ALL RERFERENCES FROM PAGE THAT IDs SIMILAR SOURCE CODE
-def submit_repos(lab):
-    mossPy(lab, True)
+#------------------------------------------------------------------------------
+#def submit_repos(lab, teams):
+#    mossPy(lab, teams["instructor"][lab])
 
+#------------------------------------------------------------------------------
+# lab1 tests when instructor provides no base code
+# lab2 tests when instructor does provide base code
+# lab3 tests when a student has an empty repo at the deadline
+#------------------------------------------------------------------------------
+def test():
+    teams = parse_teams("./test/teams.json")
+    team = teams.keys()[0]
+    labs = teams[team].keys()
+    for lab in labs:
+        get_repos(lab, teams)
+        submit_repos(lab, teams["instructor"][lab])
+        notify(lab)
+    
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 def main(args):
+    teams = parse_teams("./teams.json")
     lab = args[1]
-    get_repos(lab)
-    submit_repos(lab)
+    get_repos(lab, teams)
+    submit_repos(lab, teams["instructor"][lab])
     notify(lab)
 
 if __name__ == "__main__":
     # main(sys.argv)
-    print parse_teams()
+    # teams = parse_teams()
+    test()
 
