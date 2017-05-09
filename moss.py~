@@ -33,7 +33,7 @@ def parse_teams(path):
 # Handy to tidy up after running the test and peeking at what gets pulled.
 #------------------------------------------------------------------------------
 def clear():
-    f = open("./teams.json", "r")
+    f = open(path, "r")
     teams = json.load(f)
     labs = teams["instructor"].keys()
     for lab in labs:
