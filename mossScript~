@@ -15,7 +15,7 @@ while getopts ":d:b" opt; do
       ;;
     b)
       # TODO: Determine whether the base code will always be in this folder
-      cat ./$DIR/instructor/resources/code/*.s > ./$DIR/instructor/base.s
+      cat ./$DIR/instructor/*/*/*.s > ./$DIR/instructor/base.s
       BASE=true
       ;;
     \?)
@@ -31,7 +31,7 @@ done
 
 if [ $BASE = true ]; then
   # $RESULTS = the url returned by moss
-  RESULTS=$(./moss -l mips -b ./$DIR/instructor/base.s -d ./$DIR/*/resources/code/*.s | grep '^http')
+  RESULTS=$(./moss -l mips -b ./$DIR/instructor/base.s -d ./$DIR/*/*.s | grep '^http')
 else
   RESULTS=$(./moss -l mips ./$DIR/*/*/*/*.s | grep '^http')
 fi

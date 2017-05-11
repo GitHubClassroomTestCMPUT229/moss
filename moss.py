@@ -74,9 +74,11 @@ def notify(lab):
 #   Repos are cloned into ./<labID>/<teamID>/
 #------------------------------------------------------------------------------
 def get_repos(lab, teams):
+    print "Gathering repos for moss"
     for team in teams.keys():
         if teams[team][lab]:
             clone_path = "./{}/{}/".format(lab, team)
+            print "Cloning into " + clone_path
             if os.path.exists(clone_path):
                 shutil.rmtree(clone_path)
             Repo.clone_from(teams[team][lab], clone_path)
