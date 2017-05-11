@@ -3,14 +3,24 @@ import shutil
 from github import Github
 from git import Repo
 
+# Oauth tokens in gitpython    
+# http://stackoverflow.com/questions/36358808/cloning-a-private-repo-using-https-with-gitpython
+# User: shawnzhu
+
+# Purpose:
+#   Reads git.token to get the oauth token that allows PyGithub and GitPython 
+#   to perform their actions.
 def get_token():
     f = open("git.token", "r")
     token = f.read().strip()
     return token
 
+# Purpose:
+#   To iterate over all the GitHub IDs in a class.txt file
+#   and add the GitHub users to the organization's membership.
 # class.txt is a text file with student gitIDs on each line
 def set_members():
-    class_list = open("./class.txt", "r")
+    class_list = open("./class/class.txt", "r")
     c = [line.strip() for line in c]
     class_list.close()
 
@@ -33,16 +43,15 @@ def set_members():
 # team:
 # <member>
 def set_teams():
+    print "Setting teams."
     teams = {}
-    class_list = open("./class.txt", "r")
-    teams_list = open("./teams.txt", "r")
-
+    class_list = open("./class/class.txt", "r")
+    teams_list = open("./class/teams.txt", "r")
     t = teams_list.readlines()
     c = class_list.readlines()
     t = [line.strip() for line in t]
     c = [line.strip() for line in c]
     i = 0
-
     class_list.close()
     teams_list.close()
 
@@ -67,41 +76,58 @@ def set_teams():
             teams[team_name] = team
             i += 1
 
-    out = open("team_defs.json", "w")
+    out = open("./class/team_defs.json", "w")
     json.dump(teams, out)
     out.close()
 
+# Purpose:
+#   To iterate over all the teams defined locally with ten_defs.json
+#   and create teams on GitHub.
 def set_git_teams():
+    print "Setting teams on GitHub."
     token = get_token()
     g = Github(token)
     org = g.get_organization("GitHubClassroomTestCMPUT229")
-    f = open("team_defs.json", "r")
+    f = open("./class/team_defs.json", "r")
     teams = json.load(f)
     f.close()
 
-    git_teams = []
+    git_teams = [] # TODO: delete?
     for team in teams.keys():
         t = None
         try:
             t = org.create_team(team)
-            git_teams.append(t)
+            git_teams.append(t) # TODO: delete?
+            print "Created " + team + " on GitHub."
         except:
             print "Error creating team: team {} already exists.".format(team)
         for member in teams[team]:
             t.add_to_members(g.get_user(member))
     
-
+# Param:
+#   lab: string identifier for the base code for a lab.  Defaults to testlab1.
+# Purpose:
+#   To iterate over all the teams for the CMPUT229 GitHub organization and
+#   assign each team a clone of the repo containing the base code.
 def set_repos(lab="testlab1"):
+    print "Setting repos."
     token = get_token()
     g = Github(token)
     org = g.get_organization("GitHubClassroomTestCMPUT229")
     teams = org.get_teams()
 
     repos = {}
-    base = local_clone(lab)
+    try:
+        print "Setting local clone of base code."
+        base = local_clone(lab)
+    except Exception as e:
+        print "Error making local clone of base code."
+        print e
+        return
     for team in teams:
         if team.name != "Students":
             try:
+                print "Assigning " + team.name + " the repo."
                 team_repo = clone(lab, team, base) 
                 repos[team.name] = team_repo
             except Exception as e:
@@ -112,6 +138,11 @@ def set_repos(lab="testlab1"):
     json.dump(repos, f)
     f.close()
 
+# Param:
+#   lab: string identifier for a lab.  Defaults to testlab1.
+# Purpose:
+#   Iterates over all repos for all teams in the organization and 
+#   deletes each team's repo for a given lab.
 def del_repos(lab="testlab1"):
     token = get_token()
     g = Github(token)
@@ -121,9 +152,10 @@ def del_repos(lab="testlab1"):
         repos = team.get_repos()
         for repo in repos:
             if lab in repo.name:
-                print "deleting " + repo.name
+                print "Deleting repo " + repo.name
                 repo.delete()
 
+# Iterates over all teams in the organization & deletes them.
 def del_teams():
     token = get_token()
     g = Github(token)
@@ -131,9 +163,17 @@ def del_teams():
     teams = org.get_teams()
     for team in teams:
         if team.name != "Students":
-            print "deleting " + team.name
+            print "Deleting team " + team.name
             team.delete()
 
+# Params:
+#   lab: identifier for the lab, eg "lab1".
+#   team: PyGitHub team object.
+#   base_repo: GitPython repo object.
+# Purpose:
+#   Distributes the repo to a team from a local copy of the repo.
+# Returns:
+#   A dictionary mapping the lab identifier to the url of the team's clone.
 def clone(lab, team, base_repo):
     token = get_token()
     g = Github(token)
@@ -147,46 +187,40 @@ def clone(lab, team, base_repo):
     remote.push()  
     return {lab: repo_url}
 
-def remove_local():
-    shutil.rmtree("./base/")
-
-# Takes in a url to a github resource, and inserts an oauth token in the url
-# This function is used to make access easier, and to keep from committing 
-# oauth tokens to git repos.  It lets the url remain unaltered at the higher scope.
-def insert_auth(url):
-    token = get_token()
-    url = url[:url.find("://")+3] + token + ":x-oauth-basic@" + url[url.find("github"):]
-    return url
-
+# Param:
+#   lab: string identifier for a lab
+# Purpose:
+#   Creates a local copy of the lab's base code in order to distribute it to students in the class.
+# Return:
+#   GitPython Repo object
 def local_clone(lab):
     token = get_token()
     url = "https://github.com/GitHubClassroomTestCMPUT229/"+lab
     base_repo = Repo.clone_from(insert_auth(url), "./base/")
     return base_repo
 
-# Oauth tokens in gitpython    
-# http://stackoverflow.com/questions/36358808/cloning-a-private-repo-using-https-with-gitpython
-# User: shawnzhu
-def test_get_repo():
-    lab = "1"
-    team = "1"
-    token = get_token()
-    g = Github(token)
-    org = g.get_organization("GitHubClassroomTestCMPUT229")
-    url = "https://"+token+":x-oauth-basic@github.com/GitHubClassroomTestCMPUT229/"
-    base_code = "testlab1"
-    team_name = lab+"_"+team
-    base_repo = Repo.clone_from(url+base_code, "./base/")
-    team_repo = org.create_repo(team_name)
-    remote = base_repo.create_remote(team_repo.name, url+team_name)
-    remote.push()
+# Removes the local copy of the repo after distribution
+def remove_local():
     shutil.rmtree("./base/")
 
+# Param:
+#   url: string representation of a GitHub resource.
+# Purpose:
+#   Inserts an oauth token in the url to make access easier, and to keep from committing 
+#   oauth tokens to git repos.  It lets the url remain unaltered at the higher scope.
+# Returns:
+#   The url, but with oauth token inserted
+def insert_auth(url):
+    token = get_token()
+    url = url[:url.find("://")+3] + token + ":x-oauth-basic@" + url[url.find("github"):]
+    return url
+
+# Steps through team formation, repo assignment, repo deletion, and team deletion
 def main():
     set_teams()
     set_git_teams()
     set_repos()
-    raw_input()
+    raw_input("TEAMS & REPOS MADE. AWAITING INPUT TO PROCEED.")
     del_repos()
     del_teams()
     return
