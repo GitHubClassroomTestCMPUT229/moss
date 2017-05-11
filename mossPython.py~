@@ -13,7 +13,6 @@ import os
 # Usage: ./mossPython.py <dir> <base_flag>
 
 def callScript(project_dir, base):
-    print "Submitting repos to moss."
     #-------------------------------------------------------------------
     # Setup
     #-------------------------------------------------------------------
