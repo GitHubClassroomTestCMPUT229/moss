@@ -7,6 +7,10 @@ from git import Repo
 # http://stackoverflow.com/questions/36358808/cloning-a-private-repo-using-https-with-gitpython
 # User: shawnzhu
 
+# Organizations & Membership
+# https://github.com/PyGithub/PyGithub/issues/507
+# User: lbrownell-gpsw
+
 # Purpose:
 #   Reads git.token to get the oauth token that allows PyGithub and GitPython 
 #   to perform their actions.
@@ -19,16 +23,13 @@ def get_token():
 #   To iterate over all the GitHub IDs in a class.txt file
 #   and add the GitHub users to the organization's membership.
 # class.txt is a text file with student gitIDs on each line
-def set_members():
+def set_members(hub, org):
     class_list = open("./class/class.txt", "r")
     c = [line.strip() for line in c]
     class_list.close()
 
-    token = get_token()
-    g = Github(token)
-    org = g.get_organization("GitHubClassroomTestCMPUT229")
     for student in c:
-        org.add_to_public_members(g.get_user(student))
+        org.add_to_public_members(hub.get_user(student))
 
 # Default: Each student in the class is in their own team
 # Nondefault:   If students are allowed to form groups, then their groups should
@@ -83,11 +84,9 @@ def set_teams():
 # Purpose:
 #   To iterate over all the teams defined locally with ten_defs.json
 #   and create teams on GitHub.
-def set_git_teams():
+def set_git_teams(hub, org):
     print "Setting teams on GitHub."
-    token = get_token()
-    g = Github(token)
-    org = g.get_organization("GitHubClassroomTestCMPUT229")
+
     f = open("./class/team_defs.json", "r")
     teams = json.load(f)
     f.close()
@@ -102,18 +101,15 @@ def set_git_teams():
         except:
             print "Error creating team: team {} already exists.".format(team)
         for member in teams[team]:
-            t.add_to_members(g.get_user(member))
+            t.add_to_members(hub.get_user(member))
     
 # Param:
 #   lab: string identifier for the base code for a lab.  Defaults to testlab1.
 # Purpose:
 #   To iterate over all the teams for the CMPUT229 GitHub organization and
 #   assign each team a clone of the repo containing the base code.
-def set_repos(lab="testlab1"):
+def set_repos(org, lab="testlab1"):
     print "Setting repos."
-    token = get_token()
-    g = Github(token)
-    org = g.get_organization("GitHubClassroomTestCMPUT229")
     teams = org.get_teams()
 
     repos = {}
@@ -128,7 +124,7 @@ def set_repos(lab="testlab1"):
         if team.name != "Students":
             try:
                 print "Assigning " + team.name + " the repo."
-                team_repo = clone(lab, team, base) 
+                team_repo = clone(lab, team, base, org) 
                 repos[team.name] = team_repo
             except Exception as e:
                 print "Error cloning lab for " + team.name
@@ -143,10 +139,7 @@ def set_repos(lab="testlab1"):
 # Purpose:
 #   Iterates over all repos for all teams in the organization and 
 #   deletes each team's repo for a given lab.
-def del_repos(lab="testlab1"):
-    token = get_token()
-    g = Github(token)
-    org = g.get_organization("GitHubClassroomTestCMPUT229")
+def del_repos(org, lab="testlab1"):
     teams = org.get_teams()
     for team in teams:
         repos = team.get_repos()
@@ -156,10 +149,7 @@ def del_repos(lab="testlab1"):
                 repo.delete()
 
 # Iterates over all teams in the organization & deletes them.
-def del_teams():
-    token = get_token()
-    g = Github(token)
-    org = g.get_organization("GitHubClassroomTestCMPUT229")
+def del_teams(org):
     teams = org.get_teams()
     for team in teams:
         if team.name != "Students":
@@ -174,10 +164,7 @@ def del_teams():
 #   Distributes the repo to a team from a local copy of the repo.
 # Returns:
 #   A dictionary mapping the lab identifier to the url of the team's clone.
-def clone(lab, team, base_repo):
-    token = get_token()
-    g = Github(token)
-    org = g.get_organization("GitHubClassroomTestCMPUT229")
+def clone(lab, team, base_repo, org):
     url = "https://github.com/GitHubClassroomTestCMPUT229/"
     base_url = url+lab
     repo_name = lab + "_" + team.name
@@ -218,11 +205,14 @@ def insert_auth(url):
 # Steps through team formation, repo assignment, repo deletion, and team deletion
 def main():
     set_teams()
-    set_git_teams()
-    set_repos()
+    token = get_token()
+    g = Github(token)
+    org = g.get_organization("GitHubClassroomTestCMPUT229")
+    set_git_teams(g, org)
+    set_repos(org)
     raw_input("TEAMS & REPOS MADE. AWAITING INPUT TO PROCEED.")
-    del_repos()
-    del_teams()
+    del_repos(org)
+    del_teams(org)
     return
 
 if __name__ == "__main__":
