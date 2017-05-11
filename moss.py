@@ -32,11 +32,14 @@ def parse_teams(path):
 # Clears all ./<lab>/ repos from cwd.
 # Handy to tidy up after running the test and peeking at what gets pulled.
 #------------------------------------------------------------------------------
-def clear():
-    f = open("./teams.json", "r")
-    teams = json.load(f)
-    labs = teams["instructor"].keys()
-    for lab in labs:
+def clear(lab=None):
+    if lab == None:
+        f = open("./teams.json", "r")
+        teams = json.load(f)
+        labs = teams["instructor"].keys()
+        for lab in labs:
+            shutil.rmtree("./{}/".format(lab))
+    else:
         shutil.rmtree("./{}/".format(lab))
 #------------------------------------------------------------------------------
 # Sends an email notifying about similarities to all members of the teaching team.

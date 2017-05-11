@@ -9,9 +9,13 @@ def main():
         cm.set_teams()
         cm.set_git_teams(hub, org)
         cm.set_repos(org)
-        moss.get_repos("testlab1", cm.get_teams(org))
-        # moss.submit_repos("testlab1", cm.get_teams(org)["instructor"]) # To submit with base code
-        moss.submit_repos("testlab1", False)    # To submit without base code
+        try:
+            moss.get_repos("testlab1", cm.get_teams(org))
+            # moss.submit_repos("testlab1", cm.get_teams(org)["instructor"]) # To submit with base code
+            moss.submit_repos("testlab1", False)    # To submit without base code
+        except:
+            pass
+        moss.clear("testlab1")
     except:
         pass
     cm.del_repos(org)
