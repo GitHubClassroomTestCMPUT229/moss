@@ -13,7 +13,7 @@ from mossPython import callScript as submit_repos
 # contacts["contacts"] is a list of email addresses: ["<address1>", "<address2>", ... ]
 #------------------------------------------------------------------------------
 def get_contacts():
-    f = open("./class/teachingTeam.json", "r")
+    f = open("teachingTeam.json", "r")
     contacts = json.load(f)
     return contacts["contacts"]
 
