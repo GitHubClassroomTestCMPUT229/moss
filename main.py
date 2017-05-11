@@ -1,19 +1,12 @@
 import classroom_manager as cm
 import moss
 from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime
 
 # Trigger collection after deadline
 # http://apscheduler.readthedocs.io/en/latest/modules/triggers/date.html
 
-def test():
-    print "It's a test!"
-
 def main():
-    sched = BackgroundScheduler()
-    sched.start()
-
-    job = sched.add_job(test, "interval", seconds=10)
-
     try:
         org_name = "GitHubClassroomTestCMPUT229"
         hub = cm.login()
@@ -37,4 +30,8 @@ def main():
     sched.shutdown()
 
 if __name__ == "__main__":
-    main()
+    sched = BackgroundScheduler()
+    sched.start()
+    job = sched.add_job(main, "date", run_date=datetime(2017, 5, 11, 13, 35))
+    while True:
+        pass
