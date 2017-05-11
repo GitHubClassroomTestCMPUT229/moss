@@ -2,9 +2,6 @@ import classroom_manager as cm
 import moss
 from apscheduler.schedulers.background import BackgroundScheduler
 
-# Trigger collection after deadline
-# http://apscheduler.readthedocs.io/en/latest/modules/triggers/date.html
-
 def test():
     print "It's a test!"
 
