@@ -18,8 +18,8 @@ def main():
         org_name = "GitHubClassroomTestCMPUT229"
         hub = cm.login()
         org = cm.get_org(hub, org_name)
-        # cm.set_teams()
-        # cm.set_git_teams(hub, org)
+        cm.set_teams()
+        cm.set_git_teams(hub, org)
         cm.set_repos(org)
         try:
             moss.get_repos("testlab1", cm.get_teams(org))
@@ -31,7 +31,7 @@ def main():
     except:
         pass
     cm.del_repos(org)
-    # cm.del_teams(org)
+    cm.del_teams(org)
 
     job.remove()
     sched.shutdown()

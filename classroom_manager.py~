@@ -196,7 +196,7 @@ def del_teams(org):
         if team.name != "Students":
             members = team.get_members()
             for member in members:
-                team.remove_from_members(member)
+                team.remove_from_memebers(member)
             print "Deleting team " + team.name
             team.delete()
 
