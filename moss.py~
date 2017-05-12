@@ -13,9 +13,9 @@ from mossPython import callScript as submit_repos
 # contacts["contacts"] is a list of email addresses: ["<address1>", "<address2>", ... ]
 #------------------------------------------------------------------------------
 def get_contacts():
-    f = open("./class/teachingTeam.txt", "r")
-    contacts = f.readlines()
-    return contacts
+    f = open("./class/teachingTeam.json", "r")
+    contacts = json.load(f)
+    return contacts["contacts"]
 
 #------------------------------------------------------------------------------
 # Opens a teams.json file pointed to by path and returns a dictionary representing the teams.

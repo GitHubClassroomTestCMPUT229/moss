@@ -33,8 +33,10 @@ def main():
         moss.notify("testlab1")
         moss.clear("testlab1")
         raw_input("Moss files cleared.  Press [enter] to continue.")
+
     except:
         pass
+
     m.del_repos()
     raw_input("Press [enter] to continue.")
     m.del_teams()

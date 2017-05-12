@@ -207,9 +207,10 @@ class Manager():
     # Returns:
     #   A dictionary mapping the lab identifier to the url of the team's clone.
     def clone(self, lab, team, base_repo):
+        url = "https://github.com/GitHubClassroomTestCMPUT229/"
         base_url = self.url+lab
-        repo_name = "{}_{}".format(lab, team.name)
-        repo_url = self.url + repo_name
+        repo_name = lab + "_" + team.name
+        repo_url = url + repo_name
         team_repo = self.org.create_repo(repo_name, team_id=team)
         remote = base_repo.create_remote(team_repo.name, self.insert_auth(repo_url))
         remote.push()  
@@ -223,7 +224,7 @@ class Manager():
     #   GitPython Repo object
     def local_clone(self, lab):
         token = self.get_token()
-        url = self.url+lab
+        url = "https://github.com/GitHubClassroomTestCMPUT229/"+lab
         base_repo = Repo.clone_from(self.insert_auth(url), "./base/")
         return base_repo, url
 
