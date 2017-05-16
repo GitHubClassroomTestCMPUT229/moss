@@ -207,6 +207,7 @@ class Manager():
                         print e
 
     def get_repos(self, lab):
+        print "Getting repos from GitHub."
         teams = self.get_git_teams()
         teams = [team.name for team in teams]
         teams.remove("Students")
@@ -216,6 +217,12 @@ class Manager():
             if os.path.exists(clone_path):
                 shutil.rmtree(clone_path)
             Repo.clone_from(self.insert_auth(url), clone_path)
+
+        base_url = "{}{}".format(self.url, lab)
+        base_path = "./{}/instructor/".format(lab)
+        if os.path.exists(base_path):
+            shutil.rmtree(base_path)
+        Repo.clone_from(self.insert_auth(base_url), base_path)
 
 
     def del_local_repos(self, lab="testlab1"):

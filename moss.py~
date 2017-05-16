@@ -5,6 +5,7 @@ import smtplib
 import json
 
 from email.mime.text import MIMEText
+from git import Repo
 from mossPython import callScript as submit_repos
 
 #------------------------------------------------------------------------------
@@ -72,8 +73,6 @@ def notify(lab):
 # Parameters:
 #   lab:    string used to identify which lab is being pulled
 #   teams:  dict used to map lab & team to a specific repo
-# Assumes that repos are cloned into <lab>/<team>/
-# Assumes that base code is cloned into <lab>/instructor/<base>/
 # Effect:
 #   Repos are cloned into ./<labID>/<teamID>/
 #------------------------------------------------------------------------------
