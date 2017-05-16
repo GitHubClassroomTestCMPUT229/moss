@@ -11,10 +11,10 @@ def main():
     try:
         org_name = "GitHubClassroomTestCMPUT229"
         m = Manager(org_name)
-        print "Setting teams locally."
-        m.set_teams()   
-        raw_input("Teams parsed.  Press [enter] to continue.")
-        m.set_git_teams()
+        # print "Setting teams locally."
+        # m.set_teams()   
+        # raw_input("Teams parsed.  Press [enter] to continue.")
+        # m.set_git_teams()
         raw_input("Teams added to organization.  Press [enter] to continue.")
         m.set_repos("testlab1")
         raw_input("Repos distributed to teams.  Press [enter] to continue.")
@@ -23,7 +23,7 @@ def main():
             moss.get_repos("testlab1", m.get_teams())
             raw_input("Repos gathered for moss. Press [enter] to continue.")
             # moss.submit_repos("testlab1", cm.get_teams(org)["instructor"]) # To submit with base code
-            moss.submit_repos("testlab1", False)    # To submit without base code
+            moss.submit_repos("testlab1", None)    # To submit without base code
             moss.copy_response("testlab1")
             raw_input("Repos submitted to moss.  Press [enter] to continue.")
         except Exception as e:
@@ -33,6 +33,7 @@ def main():
         moss.notify("testlab1")
         moss.clear("testlab1")
         raw_input("Moss files cleared.  Press [enter] to continue.")
+
     except:
         pass
     m.del_repos()

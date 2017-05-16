@@ -114,6 +114,18 @@ class Manager():
         json.dump(teams, out)
         out.close()
 
+    def json_to_csv(self):
+        f = open("./class/team_defs.json", "r")
+        teams = json.load(f)
+        f.close()
+
+        out = open("./class/team_defs.csv", "w")
+        for team in teams:
+            for member in teams[team]:
+                out.write("{},{}\n".format(team,member))
+        out.close()
+        
+
     # Params:
     #   hub: PyGitHub github object
     #   org: PyGitHub organization object
@@ -220,7 +232,7 @@ class Manager():
     #   A dictionary mapping the lab identifier to the url of the team's clone.
     def clone(self, lab, team, base_repo):
         base_url = self.url+lab
-        repo_name = "{}_{}".format(lab, team.name)
+        repo_name = "{}_{}".format(team.name, lab)
         repo_url = self.url + repo_name
         team_repo = self.org.create_repo(repo_name, team_id=team)
         remote = base_repo.create_remote(team_repo.name, self.insert_auth(repo_url))
@@ -262,7 +274,8 @@ def main():
     m = Manager(org_name)
     # m.set_teams()
     # m.set_git_teams()
-    m.set_repos("testlab1")
+    m.json_to_csv()
+    # m.set_repos("testlab1")
     # raw_input("TEAMS & REPOS MADE. AWAITING INPUT TO PROCEED.")
     # del_repos(org)
     # del_teams(org)

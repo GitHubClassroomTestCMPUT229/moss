@@ -36,7 +36,10 @@ else
   RESULTS=$(./moss -l mips ./$DIR/*/*/*/*.s | grep '^http')
 fi
 # The results page is saved locally in the lab directory as results.html
-curl -s -o "./$DIR/results.html" -L $RESULTS
+# curl -s -o "./$DIR/results.html" -L $RESULTS
+# Noah's wget command
+# wget -e robots=off -m http://moss.stanford.edu/results/134412096/
+wget -e robots=off -k $RESULTS # --directory-prefix=./results/ # --output-document=./$DIR/results.html
 
 # ./moss -l mips ./$DIR/*.s | grep '^http' > $OUTPUTDIR
 # ./moss -l mips ./simple/*.s | grep '^http' > output.txt
