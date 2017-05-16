@@ -217,25 +217,25 @@ class Manager():
                 shutil.rmtree(clone_path)
             Repo.clone_from(self.insert_auth(url), clone_path)
 
+
+    def del_local_repos(self, lab="testlab1"):
+        clone_path = "./{}/".format(lab)
+        if os.path.exists(clone_path):
+            shutil.rmtree(clone_path)
+
     # Param:
     #   org: PyGitHub organization object
     #   lab: string identifier for a lab.  Defaults to testlab1.
     # Purpose:
     #   Iterates over all repos for all teams in the organization and 
     #   deletes each team's repo for a given lab.
-    def del_git_repos(self, lab="testlab1"):
+    def del_git_repos(self):
         teams = self.org.get_teams()
         for team in teams:
             repos = team.get_repos()
             for repo in repos:
-                if lab in repo.name:
-                    print "Deleting repo " + repo.name
-                    repo.delete()
-
-    def del_local_repos(self, lab="testlab1"):
-        clone_path = "./{}/".format(lab)
-        if os.path.exists(clone_path):
-            shutil.rmtree(clone_path)
+                print "Deleting repo " + repo.name
+                repo.delete()
 
     # Param:
     #   org: PyGitHub organization object
@@ -335,7 +335,7 @@ def main():
             m.del_local_repos(repo_name)        # remove local repos
 
     if "-X" in args:
-        print "THIS WILL CLEAR ALL REPOS & TEAMS."
+        print "THIS WILL CLEAR ALL REPOS & TEAMS FROM GitHub."
         confirm = (raw_input("Are you sure? [y/n]: ")[0].lower() == 'y')
         if confirm:
             m.del_git_repos()                   # remove remote repos
