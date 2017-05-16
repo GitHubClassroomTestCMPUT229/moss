@@ -10,3 +10,6 @@ A repo to complete work on the moss component of the service
 * Use requests to pull all references & store them in results
 * Send notification containing results to teaching team  
 
+# NOTES
+* Submission will be in ./submissions/*.*
+* Base code ./base/*.*
