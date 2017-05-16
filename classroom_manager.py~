@@ -155,6 +155,7 @@ class Manager():
     def get_git_teams(self):
         results = [team for team in self.org.get_teams()]
         return results
+        return self.org.get_teams()
 
     # Param:
     #   org: PyGitHub organization object
