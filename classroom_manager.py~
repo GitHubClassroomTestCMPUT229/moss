@@ -156,7 +156,6 @@ class Manager():
             print "Error making local clone of base code."
             print e
             return
-
         for team in teams:
             if team.name != "Students":
                 try:
