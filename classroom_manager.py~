@@ -6,6 +6,7 @@ from github import Github
 from git import Repo
 import time
 import sys
+import os
 
 # REFERENCE
 #----------------------------------------------------------------------------------------------
@@ -31,7 +32,7 @@ class Manager():
     #   to perform their actions.
     def get_token(self):
         f = open("git.token", "r")
-        token = f.read().strip()
+        token = f.readline().strip()
         return token
 
     # Params:
@@ -127,6 +128,16 @@ class Manager():
             for member in teams[team]:
                 out.write("{},{}\n".format(team,member))
         out.close()
+
+    def git_to_csv(self):
+        out = open("./class/team_defs.csv", "w")
+        teams = self.get_git_teams()
+        for team in teams:
+            members = [m for m in team.get_members()]
+            for member in members:
+                out.write("{},{}\n".format(team.name,member.login))
+        out.close()
+            
         
 
     # Params:
@@ -155,7 +166,6 @@ class Manager():
     def get_git_teams(self):
         results = [team for team in self.org.get_teams()]
         return results
-        return self.org.get_teams()
 
     # Param:
     #   org: PyGitHub organization object
@@ -195,11 +205,17 @@ class Manager():
                     except Exception as e:
                         print "Error cloning lab for " + team.name
                         print e
-                        
-        self.remove_local()
-        f = open("./class/teams.json", "w")
-        json.dump(repos, f)
-        f.close()
+
+    def get_repos(self, lab):
+        teams = self.get_git_teams()
+        teams = [team.name for team in teams]
+        teams.remove("Students")
+        for team in teams:
+            url = "{}{}".format(self.url, "{}_{}".format(team, lab))
+            clone_path = "./{}/{}/".format(lab, team)
+            if os.path.exists(clone_path):
+                shutil.rmtree(clone_path)
+            Repo.clone_from(self.insert_auth(url), clone_path)
 
     # Param:
     #   org: PyGitHub organization object
@@ -207,7 +223,7 @@ class Manager():
     # Purpose:
     #   Iterates over all repos for all teams in the organization and 
     #   deletes each team's repo for a given lab.
-    def del_repos(self, lab="testlab1"):
+    def del_git_repos(self, lab="testlab1"):
         teams = self.org.get_teams()
         for team in teams:
             repos = team.get_repos()
@@ -216,10 +232,15 @@ class Manager():
                     print "Deleting repo " + repo.name
                     repo.delete()
 
+    def del_local_repos(self, lab="testlab1"):
+        clone_path = "./{}/".format(lab)
+        if os.path.exists(clone_path):
+            shutil.rmtree(clone_path)
+
     # Param:
     #   org: PyGitHub organization object
     # Iterates over all teams in the organization & deletes them.
-    def del_teams(self):
+    def del_git_teams(self):
         teams = self.org.get_teams()
         for team in teams:
             if team.name != "Students":
@@ -276,34 +297,49 @@ class Manager():
         url = url[:url.find("://")+3] + token + ":x-oauth-basic@" + url[url.find("github"):]
         return url
 
-# Steps through team formation, repo assignment, repo deletion, and team deletion
-# flags:    -o <organization_name>
-#           -r <repo_name>
+# flags:    -o <organization_name>: set organization name
+#           -r <repo_name>: set repo for script
+#           -t: set teams for the organization locally              (Set [t]eams)
+#           -s: distribute base repo (-r <repo>) to teams on GitHub ([S]et repos)
+#           -g: collect repos (-r <base_repo>) from students        ([G]et repos)
+#           -x: clear local repos (-r <assignment
+#           -X: clear teams & repos on GitHub
 def main():
     # Default params
     org_name = "GitHubClassroomTestCMPUT229"
-    lab_name = "testlab1"
-
+    repo_name = "testlab1"
     args = sys.argv
-    if len(args) < 2:
-        print "ERROR RUNNING SCRIPT"
-        print "Usage: classroom_manager.py [flag] [optional identifier]"
-    if "-o" in args:
-        org_name = args[args.find("-o")+1]
-    if "-r" in args:
-        lab_name = args[args.find("-r")+1]
-    
 
+    if "-o" in args:
+        org_name = args[args.index("-o")+1]     # Set org name
     m = Manager(org_name)
-    print m.get_teams()
-    print m.get_git_teams()
-    # m.set_teams()
-    # m.set_git_teams()
-    # m.json_to_csv()
-    # m.set_repos("testlab1")
-    # raw_input("TEAMS & REPOS MADE. AWAITING INPUT TO PROCEED.")
-    # del_repos(org)
-    # del_teams(org)
+
+    if "-t" in args:
+        m.set_teams()                           # local
+        m.set_git_teams()                       # remote
+        m.git_to_csv()                          # setup csv for teams
+
+    if "-r" in args:
+        repo_name = args[args.index("-r")+1]    # Set lab name
+    
+    if "-s" in args:
+        m.set_repos(repo_name)                  # Set github repos
+    
+    if "-g" in args:
+        m.get_repos(repo_name)                  # get github repos
+
+    if "-x" in args:
+        print "THIS WILL CLEAR THE LOCAL REPOS FOR {}.".format(repo_name)
+        confirm = (raw_input("Are you sure? [y/n]: ")[0].lower() == 'y')
+        if confirm:
+            m.del_local_repos(repo_name)             # remove local repos
+
+    if "-X" in args:
+        print "THIS WILL CLEAR ALL REPOS & TEAMS."
+        confirm = (raw_input("Are you sure? [y/n]: ")[0].lower() == 'y')
+        if confirm:
+            m.del_git_repos()
+            m.del_git_teams()
     return
 
 if __name__ == "__main__":
