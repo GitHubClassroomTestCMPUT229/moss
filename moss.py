@@ -125,7 +125,7 @@ def mossService(lab):
     get_repos(lab, teams)
     submit_repos(lab, teams["instructor"][lab])
     copy_response(lab)
-    notify(lab)
+    # notify(lab)
 
 def main(argv):
     if len(argv) != 2:
