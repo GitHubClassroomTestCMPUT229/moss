@@ -62,34 +62,6 @@ def copy_response(lab):
     f.close()
     out.close()
 
-#------------------------------------------------------------------------------
-# Parameter:
-#   lab: string to identify which lab is being processed.
-#        can be passed in on commandline if cron job command, or can be passed in by python process
-# Effect:
-#   student code located in ./<lab>/<team>/submission/ is compared against
-#   itself & archived
-#   the resulting .html file is captured and emailed to the teaching team
-#------------------------------------------------------------------------------
-def mossService(lab):
-    teams = parse_teams("./class/teams.json")
-    get_repos(lab, teams)
-    submit_repos(lab, teams["instructor"][lab])
-    copy_response(lab)
-    # notify(lab)
-
-def main(argv):
-    if len(argv) != 2:
-        print("Usage: python moss.py <lab> OR python moss.py test")
-    if len(argv) > 1:
-        if argv[1] == "test":
-            test()
-        elif argv[1] == "clear":
-            clear()
-        else:
-            lab = argv[1]
-            mossService(lab)
-
 if __name__ == "__main__":
     submitRepos("testlab1", True)
     # main(sys.argv)
