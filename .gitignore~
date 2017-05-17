@@ -3,6 +3,5 @@
 *.token
 *.token*
 ./testlab/
-testlab/
 
 

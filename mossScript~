@@ -32,7 +32,7 @@ RESULTS=$(./moss -l $LANG -b $BASE -d $DIRS | grep '^http')
 
 echo "$RESULTS"
 
-wget -e robots=off -k $RESULTS --directory-prefix=./results/ # --output-document=./$DIR/results.html
+wget -e robots=off -k $RESULTS # --directory-prefix=./results/ # --output-document=./$DIR/results.html
 
 # ./moss -l mips ./$DIR/*.s | grep '^http' > $OUTPUTDIR
 # ./moss -l mips ./simple/*.s | grep '^http' > output.txt
