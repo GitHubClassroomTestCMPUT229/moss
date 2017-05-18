@@ -3,6 +3,7 @@ main:
         la      $a1, buffer     # load the address of buffer for
                                 #   ASCII decimal into $a1
         jal     hex2dec         # call the subroutine
+
 # print out the result of the conversion using
 # the system call print_int
 
@@ -19,3 +20,9 @@ main:
 
         li      $v0, 10         # return to the OS by call sys call no. 10
         syscall                 # make the actual call
+
+hex2dec:
+        slt     $t0, $a0, $zero  # determine the sign, setting $t0
+                                 #   to 1 if $a0 is negative
+        beqz    $t0, next        # skip the next instruction if >= 0
+        neg     $a0, $a0         # negate the sign if negative

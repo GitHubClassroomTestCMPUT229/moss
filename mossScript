@@ -1,40 +1,41 @@
 #!/bin/bash
 
-# Calling expectation: moss -l <lang> -b <base> -d <dir1 ... dirn>
-
+if [ -z "$1" ]; then
+    echo usage: moss -d \<lab_directory\> \[-i \<basefile1\>, ... , \<basefileN\>\]
+    exit 1
+fi
+BASE=false
 # getopts tutorial
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
 # while loop modified from above source
-# comparisons: http://tldp.org/LDP/abs/html/comparison-ops.html
-#
-# segment from args:
-# http://stackoverflow.com/questions/2390738/bash-argument-list-segment
-# user: ghostdog74
+while getopts ":d:b" opt; do
+  case $opt in
+    d)
+      DIR=$OPTARG
+      ;;
+    b)
+      BASE=true
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
 
-# Expectation: Base code in ./$DIR/instructor/base.s
-# Expectation: Student submissions in ./$DIR/*/submission/
-# $RESULTS = the url returned by moss
-
+if [ $BASE = true ]; then
+  echo "!!!"
+  # $RESULTS = the url returned by moss
+  RESULTS=$(./moss -l mips -b ./$DIR/instructor/base.s ./$DIR/*/submission/*.s | grep '^http')
+else
+  RESULTS=$(./moss -l mips ./$DIR/*/submission/*.s | grep '^http')
+fi
 # The results page is saved locally in the lab directory as results.html
-# curl -s -o "./$DIR/results.html" -L $RESULTS
-# Noah's wget command
-# wget -e robots=off -m http://moss.stanford.edu/results/134412096/
-
-echo "COMMAND: $@"
-
-LANG=$1
-BASE=$2
-DIRS="${@:3}"
-
-echo "ARGS: $LANG $BASE $DIRS"
-
-RESULTS=$(./moss -l $LANG -b $BASE -d $DIRS | grep '^http')
-
-echo "$RESULTS"
-
-# wget -m -k $RESULTS --directory-prefix=./results/
-# wget -e robots=off -nc -k -r -m $RESULTS --directory-prefix=./results/
-wget -e robots=off -p -r --convert-links $RESULTS -nH -nd --directory-prefix=./results/
+wget -e robots=off -p -r --quiet --convert-links $RESULTS -nH -nd --directory-prefix=./results/
 
 # ./moss -l mips ./$DIR/*.s | grep '^http' > $OUTPUTDIR
 # ./moss -l mips ./simple/*.s | grep '^http' > output.txt

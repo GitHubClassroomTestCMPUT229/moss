@@ -5,5 +5,7 @@
 ./testlab/
 testlab/
 ./testlab/*
-
+/venv/
+/venv/*
+*~
 
