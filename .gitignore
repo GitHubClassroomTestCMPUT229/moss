@@ -1,11 +1,2 @@
-./*.token
-./*.token*
-*.token
-*.token*
-./testlab/
-testlab/
-./testlab/*
-/venv/
-/venv/*
 *~
 

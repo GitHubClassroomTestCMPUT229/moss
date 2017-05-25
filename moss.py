@@ -11,6 +11,7 @@ import subprocess
 def makeBase(lab, suffix = "s"):
     base_dir = "./{}/instructor/base/".format(lab)
     base_file = "./{}/instructor/base.{}".format(lab, suffix)
+
     if os.path.isfile(base_file):   # Clear old base file
         os.remove(base_file)
     files = os.listdir(base_dir)
@@ -19,10 +20,8 @@ def makeBase(lab, suffix = "s"):
     base = open(base_file, "a")     # Make new base file
     for f in files:
         f = open("{}{}".format(base_dir, f), "r")
-        base.write(f.read().strip())
-        base.write("\n")
+        base.write(f.read())
         f.close()
-    base.write("\0")
     base.close()
 
     return base_file                # Return path to base file
@@ -32,7 +31,7 @@ def makeBase(lab, suffix = "s"):
 # Student submissions to be in ./<lab>/<team>/submission/
 # Archived submissions to be in ./<lab>/archived/
 def submit(lab, base, archives, lang="mips", suffix="s"):
-    subprocess.call(["chmod", "-R", "764", "./{}/".format(lab)])
+    # subprocess.call(["chmod", "-R", "764", "./{}/".format(lab)])
     print "Submitting repos to moss."
 
     lab_dir = "./{}/*/submission/*.s".format(lab, suffix)
@@ -43,7 +42,8 @@ def submit(lab, base, archives, lang="mips", suffix="s"):
     
     base_file = makeBase(lab, suffix)
     
-    command = "mossScript {} {} {}".format(lang, base_file, lab_dir)
+    command = "mossScript {} {} {} {}".format(lang, base_file, lab_dir, archives)
+    command = command.strip()
     command = command.split(" ")
     subprocess.call(["mossScript", "-d", "{}".format(lab), "-b"])
 
@@ -60,7 +60,7 @@ def clear(lab):
 #           -r <repo_name>: set repo for script
 #           -b: concatenate all base files into one file        (Set [b]ase code)
 #           -s: submit code to moss                             ([S]ubmit)
-#           -g: collect repos (-r <base_repo>) from students        ([G]et repos)
+#           -g: collect repos (-r <base_repo>) from students    ([G]et repos)
 #           -x: clear local responses from moss
 #           -X: clear all local files
 def main():
@@ -93,8 +93,6 @@ def main():
 
     if "-s" in args:
         submit(lab, base, archives)
-
-
 
 if __name__ == "__main__":
     main()

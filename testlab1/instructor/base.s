@@ -1,8 +1,3 @@
-main:
-        li      $a0, -0x1234    # load the number to be converted into $a0
-        la      $a1, buffer     # load the address of buffer for
-                                #   ASCII decimal into $a1
-        jal     hex2dec         # call the subroutine
 # print out the result of the conversion using
 # the system call print_int
 
@@ -19,3 +14,18 @@ main:
 
         li      $v0, 10         # return to the OS by call sys call no. 10
         syscall                 # make the actual call
+main:
+        li      $a0, -0x1234    # load the number to be converted into $a0
+        la      $a1, buffer     # load the address of buffer for
+                                #   ASCII decimal into $a1
+        jal     hex2dec         # call the subroutine
+f:
+        li      $a0, -0x1234    # load the number to be converted into $a0
+        la      $a1, buffer     # load the address of buffer for
+                                #   ASCII decimal into $a1
+        jal     hex2dec         # call the subroutine
+main:
+        li      $a0, -0x1234    # load the number to be converted into $a0
+        la      $a1, buffer     # load the address of buffer for
+                                #   ASCII decimal into $a1
+        jal     hex2dec         # call the subroutine
